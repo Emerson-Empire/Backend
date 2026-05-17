@@ -1,16 +1,28 @@
-// Database configuration example
-export const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  user: process.env.DB_USER || 'admin',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'emerson_db',
-};
+import { Pool } from 'pg';
 
-// Server configuration
-export const serverConfig = {
-  port: process.env.PORT || 3000,
-  env: process.env.NODE_ENV || 'development',
-};
+let pool: Pool | null = null;
 
-// Other configurations can be added here
+function getPool(): Pool {
+  if (!pool) {
+    pool = new Pool({
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT) || 5432,
+      database: process.env.DB_NAME,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      ssl: { rejectUnauthorized: false },
+    });
+  }
+  return pool;
+}
+
+export async function testConnection(): Promise<void> {
+  const client = await getPool().connect();
+  try {
+    await client.query('SELECT 1');
+  } finally {
+    client.release();
+  }
+}
+
+export default getPool;
