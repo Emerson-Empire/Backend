@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
+import { testConnection } from './config/database';
+import { logger } from './utils/logger';
 
 // Load environment variables
 dotenv.config();
@@ -59,12 +61,24 @@ app.get('/health', (req, res) => {
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error(err.stack);
+  logger.error(err.stack || err.message);
   res.status(500).json({ message: 'Internal Server Error' });
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-  console.log(`📘 API docs at http://localhost:${PORT}/api-docs`);
-});
+async function start(): Promise<void> {
+  try {
+    await testConnection();
+    logger.success('Database connected successfully');
+  } catch (error) {
+    logger.error('Failed to connect to database — shutting down', error);
+    process.exit(1);
+  }
+
+  app.listen(PORT, () => {
+    logger.success(`Server running on http://localhost:${PORT}`);
+    logger.info(`API docs at http://localhost:${PORT}/api-docs`);
+  });
+}
+
+start();
