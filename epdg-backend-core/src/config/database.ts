@@ -1,4 +1,7 @@
-import { Pool } from 'pg';
+import { Pool } from "pg";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 let pool: Pool | null = null;
 
@@ -10,7 +13,7 @@ function getPool(): Pool {
       database: process.env.DB_NAME,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
-      ssl: { rejectUnauthorized: false },
+      ssl:{ rejectUnauthorized: false },
     });
   }
   return pool;
@@ -19,7 +22,7 @@ function getPool(): Pool {
 export async function testConnection(): Promise<void> {
   const client = await getPool().connect();
   try {
-    await client.query('SELECT 1');
+    await client.query("SELECT 1");
   } finally {
     client.release();
   }
