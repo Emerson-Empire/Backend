@@ -3,8 +3,8 @@ export interface ContactRequest {
   first_name: string;
   last_name: string;
   email: string;
-  service_interest: string | null;
-  urgency: number | null;
+  service_interest: string;
+  urgency: number;
   message: string;
   source: string;
   status: string;
@@ -15,7 +15,7 @@ export interface ContactRequestInput {
   first_name: string;
   last_name: string;
   email: string;
-  service_interest?: string | null;
-  urgency?: number | null;
+  service_interest: string;
+  urgency: number;
   message: string;
 }

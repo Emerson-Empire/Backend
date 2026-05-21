@@ -26,11 +26,9 @@ const router = Router();
  *           description: Contact's email address
  *         service_interest:
  *           type: string
- *           nullable: true
  *           description: Service the contact is interested in
  *         urgency:
  *           type: integer
- *           nullable: true
  *           description: Urgency level (1-5)
  *         message:
  *           type: string
@@ -78,7 +76,11 @@ const router = Router();
  *           schema:
  *             type: object
  *             required:
+ *               - first_name
+ *               - last_name
  *               - email
+ *               - service_interest
+ *               - urgency
  *               - message
  *             properties:
  *               first_name:
@@ -111,7 +113,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/ContactRequest'
  *       400:
- *         description: Missing required fields (email, message)
+ *         description: All fields are required
  *       409:
  *         description: A contact request with this email already exists
  *       500:
