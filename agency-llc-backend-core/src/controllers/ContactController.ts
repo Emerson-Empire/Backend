@@ -7,7 +7,7 @@ export const submitContact = async (req: Request, res: Response) => {
   try {
     const { first_name, last_name, email, service_interest, urgency, message } = req.body;
 
-    if (!first_name || !last_name || !email || !message) {
+    if (!first_name || !last_name || !email || !service_interest || !urgency || !message) {
       res.status(400).json({ message: 'All fields are required' });
       return;
     }
