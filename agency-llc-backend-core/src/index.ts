@@ -11,6 +11,7 @@ dotenv.config();
 
 // Import routes
 // import userRoutes from './routes/userRoutes';
+import contactRoutes from './routes/contactRoutes';
 
 // Initialize Express app
 const app = express();
@@ -58,6 +59,7 @@ app.get('/health', (req, res) => {
 
 // Routes
 // app.use('/api/users', userRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
