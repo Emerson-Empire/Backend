@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { testConnection } from './config/database';
 import { logger } from './utils/logger';
+import contactRoutes from './routes/contactRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -57,7 +58,7 @@ app.get('/health', (req, res) => {
 });
 
 // Routes
-// app.use('/api/users', userRoutes);
+app.use('/api/contact', contactRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
