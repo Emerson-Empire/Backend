@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
 import { testConnection } from './config/database';
 import { logger } from './utils/logger';
+import { corsOptions } from './utils/corsconfig';
 
 // Load environment variables
 dotenv.config();
@@ -19,7 +20,11 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
+
+//cores use //
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Swagger documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
