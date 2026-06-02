@@ -4,6 +4,12 @@ let pool: Pool | null = null;
 
 function getPool(): Pool {
   if (!pool) {
+    const required = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD'];
+    const missing = required.filter((key) => !process.env[key]);
+    if (missing.length > 0) {
+      throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+    }
+
     pool = new Pool({
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT) || 5432,
