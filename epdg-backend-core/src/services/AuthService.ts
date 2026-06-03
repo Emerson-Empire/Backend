@@ -146,20 +146,28 @@ export class AuthService {
     let status = 'approved';
 
     if (user.role === 'company') {
-      const companyResult = await pool.query(
+      const r = await pool.query(
         'SELECT is_approved FROM companies WHERE user_id = $1 AND deleted_at IS NULL',
         [user.id]
       );
-      if (companyResult.rows.length > 0 && !companyResult.rows[0].is_approved) {
-        status = 'pending';
+      if (r.rows.length > 0 && !r.rows[0].is_approved) {
+        status = user.rejection_reason ? 'rejected' : 'pending';
       }
     } else if (user.role === 'school') {
-      const schoolResult = await pool.query(
+      const r = await pool.query(
         'SELECT is_approved FROM schools WHERE user_id = $1 AND deleted_at IS NULL',
         [user.id]
       );
-      if (schoolResult.rows.length > 0 && !schoolResult.rows[0].is_approved) {
-        status = 'pending';
+      if (r.rows.length > 0 && !r.rows[0].is_approved) {
+        status = user.rejection_reason ? 'rejected' : 'pending';
+      }
+    } else if (user.role === 'intern') {
+      const r = await pool.query(
+        'SELECT is_approved, rejection_reason FROM intern_profiles WHERE user_id = $1',
+        [user.id]
+      );
+      if (r.rows.length > 0 && !r.rows[0].is_approved) {
+        status = r.rows[0].rejection_reason ? 'rejected' : 'pending';
       }
     }
 

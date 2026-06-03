@@ -11,7 +11,9 @@ import { testConnection, performMigration } from './db';
 import { logger } from './utils/logger';
 import { corsOptions } from './utils/corsconfig';
 
-import authRoutes from './routes/authRoutes';
+import authRoutes   from './routes/authRoutes';
+import adminRoutes  from './routes/adminRoutes';
+import internRoutes from './routes/internRoutes';
 // import userRoutes from './routes/userRoutes';
 
 const app = express();
@@ -73,8 +75,11 @@ app.get('/health', (req, res) => {
 });
 
 // Routes
-app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/auth',   authLimiter, authRoutes);
 app.use('/api/auth/login', loginLimiter);
+app.use('/api/admin',  adminRoutes);
+app.use('/api/intern', internRoutes);
+app.use('/api/onboarding', internRoutes); // alias so frontend /api/onboarding/* works
 // app.use('/api/users', userRoutes);
 
 // Error handling middleware
