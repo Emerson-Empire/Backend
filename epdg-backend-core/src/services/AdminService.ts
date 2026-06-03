@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { getPool } from '../db';
 
 export class AdminService {
@@ -177,7 +178,6 @@ export class AdminService {
     name: string; email: string; password: string;
     role: 'admin' | 'company' | 'intern' | 'school';
   }) {
-    const bcrypt = await import('bcrypt');
     const pool   = getPool();
     const hashed = await bcrypt.hash(data.password, 12);
 
