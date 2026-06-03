@@ -1,14 +1,13 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
-import { testConnection } from './db';
+import { testConnection, performMigration } from './db';
 import { logger } from './utils/logger';
 import { corsOptions } from './utils/corsconfig';
-import { performMigration } from './db';
-// Load environment variables
-dotenv.config();
 
 // Import routes
 // import userRoutes from './routes/userRoutes';
