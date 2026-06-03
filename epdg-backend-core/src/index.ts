@@ -1,21 +1,21 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
-import { testConnection } from './config/database';
+import { testConnection, performMigration } from './db';
 import { logger } from './utils/logger';
 import { corsOptions } from './utils/corsconfig';
-
-dotenv.config();
 
 import authRoutes from './routes/authRoutes';
 // import userRoutes from './routes/userRoutes';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 // Security headers
 app.use(helmet());
@@ -86,6 +86,7 @@ app.use((err: Error, req: express.Request, res: express.Response, _next: express
 async function start(): Promise<void> {
   try {
     await testConnection();
+    await performMigration();
     logger.success('Database connected successfully');
   } catch (error) {
     logger.error('Failed to connect to database — shutting down', error);
