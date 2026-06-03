@@ -6,7 +6,7 @@ import { swaggerSpec } from './config/swagger';
 import { testConnection } from './db';
 import { logger } from './utils/logger';
 import { corsOptions } from './utils/corsconfig';
-
+import { performMigration } from './db';
 // Load environment variables
 dotenv.config();
 
@@ -74,6 +74,7 @@ app.use((err: Error, req: express.Request, res: express.Response, _next: express
 async function start(): Promise<void> {
   try {
     await testConnection();
+    await performMigration();
     logger.success('Database connected successfully');
   } catch (error) {
     logger.error('Failed to connect to database — shutting down', error);
