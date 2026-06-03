@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger';
-import { testConnection } from './config/database';
+import { testConnection } from './db';
 import { logger } from './utils/logger';
 import { corsOptions } from './utils/corsconfig';
 
@@ -15,7 +15,7 @@ dotenv.config();
 
 // Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(express.json());
