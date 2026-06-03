@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS tasks CASCADE;
-
 DO $$
 BEGIN
     CREATE TYPE task_priority AS ENUM (
