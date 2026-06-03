@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS users CASCADE;
-
 DO $$
 BEGIN
     CREATE TYPE user_role AS ENUM (

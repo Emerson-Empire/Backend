@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS submissions CASCADE;
-
 DO $$
 BEGIN
     CREATE TYPE submission_status AS ENUM (

@@ -1,8 +1,9 @@
-import { Pool, PoolClient } from "pg";
+import { Pool } from "pg";
 import { migrate } from "postgres-migrations";
 import path from "path";
 
 let pool: Pool | null = null;
+const MIGRATION_LOCK_ID = 92135742;
 
 function getSslConfig() {
   if (process.env.DB_SSL === "true") {
@@ -56,23 +57,14 @@ export async function testConnection(): Promise<void> {
   }
 }
 
-async function ensureMigrationTable(client: PoolClient) {
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS public.migrations (
-      id integer PRIMARY KEY,
-      name varchar(100) UNIQUE NOT NULL,
-      hash varchar(40) NOT NULL,
-      executed_at timestamp DEFAULT current_timestamp
-    );
-  `);
-}
-
 export async function performMigration() {
   const client = await getPool().connect();
   const migrationsPath = path.join(__dirname, "migrations");
+  let lockAcquired = false;
 
   try {
-    await ensureMigrationTable(client);
+    await client.query("SELECT pg_advisory_lock($1)", [MIGRATION_LOCK_ID]);
+    lockAcquired = true;
     console.info("Starting database migration...");
     await migrate({ client }, migrationsPath);
     console.info("Database migration completed successfully.");
@@ -80,6 +72,9 @@ export async function performMigration() {
     console.error("Error occurred while migrating:", e);
     throw e;
   } finally {
+    if (lockAcquired) {
+      await client.query("SELECT pg_advisory_unlock($1)", [MIGRATION_LOCK_ID]);
+    }
     client.release();
   }
 }
