@@ -23,7 +23,7 @@ function getSslConfig() {
   return false;
 }
 
-function getPool(): Pool {
+export function getPool(): Pool {
   if (!pool) {
     const required = ["DB_HOST", "DB_NAME", "DB_USER", "DB_PASSWORD"];
     const missing = required.filter((key) => !process.env[key]);

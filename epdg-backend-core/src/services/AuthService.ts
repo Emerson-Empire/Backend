@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
-import getPool from '../config/database';
+import { getPool } from '../db';
 import { logger } from '../utils/logger';
 import nodemailer from 'nodemailer';
 
@@ -81,6 +81,12 @@ export class AuthService {
           `INSERT INTO intern_profiles (user_id, contact_phone, created_at)
            VALUES ($1, $2, NOW())`,
           [user.id, data.contact_phone || null]
+        );
+      } else if (data.role === 'admin') {
+        await client.query(
+          `INSERT INTO admins (user_id, admin_role, is_mentor, created_at)
+           VALUES ($1, 'admin', FALSE, NOW())`,
+          [user.id]
         );
       }
 
@@ -332,6 +338,9 @@ export class AuthService {
       profile = r.rows[0] || null;
     } else if (user.role === 'intern') {
       const r = await pool.query('SELECT * FROM intern_profiles WHERE user_id = $1', [userId]);
+      profile = r.rows[0] || null;
+    } else if (user.role === 'admin') {
+      const r = await pool.query('SELECT * FROM admins WHERE user_id = $1', [userId]);
       profile = r.rows[0] || null;
     }
 
