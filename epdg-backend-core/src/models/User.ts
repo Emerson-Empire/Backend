@@ -1,10 +1,13 @@
-// Example User Model - represents data structure
 export interface User {
-  id: string;
-  name: string;
+  id: number;
   email: string;
-  createdAt: Date;
-  updatedAt: Date;
+  name: string;
+  password: string;
+  role: 'admin' | 'company' | 'intern' | 'school';
+  is_verified: boolean;
+  verification_token: string | null;
+  token_expires_at: Date | null;
+  last_login_at: Date | null;
+  created_at: Date;
+  deleted_at: Date | null;
 }
-
-// Add database models, schemas, or database connection logic here
