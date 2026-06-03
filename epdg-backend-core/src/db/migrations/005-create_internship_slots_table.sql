@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS internship_slots CASCADE;
-
 DO $$
 BEGIN
     CREATE TYPE internship_slot_status AS ENUM (

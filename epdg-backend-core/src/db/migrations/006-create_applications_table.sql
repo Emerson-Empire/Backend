@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS applications CASCADE;
-
 DO $$
 BEGIN
     CREATE TYPE application_status AS ENUM (
