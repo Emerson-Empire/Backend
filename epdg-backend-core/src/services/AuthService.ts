@@ -3,20 +3,11 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { getPool } from '../db';
 import { logger } from '../utils/logger';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-dev-secret-change-in-production';
 const SALT_ROUNDS = 12;
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.ethereal.email',
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export class AuthService {
 
@@ -368,11 +359,17 @@ export class AuthService {
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
 
     try {
-      await transporter.sendMail({
-        from: process.env.SMTP_FROM || '"Emerson Empire" <noreply@emersonempire.com>',
+      await resend.emails.send({
+        from: process.env.SMTP_FROM || 'onboarding@resend.dev',
         to: email,
-        subject: 'Verify your email address',
-        html: `<p>Click the link below to verify your email:</p><a href="${verificationUrl}">${verificationUrl}</a>`,
+        subject: 'Verify your email address — Emerson Empire',
+        html: `
+          <h2>Welcome to Emerson Empire</h2>
+          <p>Click the link below to verify your email address:</p>
+          <a href="${verificationUrl}" style="background:#000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;">Verify Email</a>
+          <p>This link expires in 24 hours.</p>
+          <p>If you did not create an account, you can ignore this email.</p>
+        `,
       });
       logger.success(`Verification email sent to ${email}`);
     } catch {
@@ -382,11 +379,16 @@ export class AuthService {
 
   private async sendPasswordResetEmail(email: string, resetUrl: string): Promise<void> {
     try {
-      await transporter.sendMail({
-        from: process.env.SMTP_FROM || '"Emerson Empire" <noreply@emersonempire.com>',
+      await resend.emails.send({
+        from: process.env.SMTP_FROM || 'onboarding@resend.dev',
         to: email,
-        subject: 'Password Reset Request',
-        html: `<p>Click the link below to reset your password (expires in 30 minutes):</p><a href="${resetUrl}">${resetUrl}</a>`,
+        subject: 'Reset your password — Emerson Empire',
+        html: `
+          <h2>Password Reset Request</h2>
+          <p>Click the link below to reset your password. This link expires in 30 minutes.</p>
+          <a href="${resetUrl}" style="background:#000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;">Reset Password</a>
+          <p>If you did not request a password reset, you can ignore this email.</p>
+        `,
       });
       logger.success(`Password reset email sent to ${email}`);
     } catch {
