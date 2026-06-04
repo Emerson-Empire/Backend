@@ -222,16 +222,16 @@ export class AdminService {
         [user.id]
       );
     } else if (user.role === 'intern') {
-      const updates: string[] = [
-        'is_approved=true', `approved_by=${adminId}`, `approved_at='${now.toISOString()}'`,
-        'rejection_reason=NULL',
-      ];
-      if (payload.department) updates.push(`department='${payload.department.replace(/'/g, "''")}'`);
-      if (payload.mentor)     updates.push(`mentor_name='${payload.mentor.replace(/'/g, "''")}'`);
+      const fields = ['is_approved=$1', 'approved_by=$2', 'approved_at=$3', 'rejection_reason=$4'];
+      const values: unknown[] = [true, adminId, now, null];
 
+      if (payload.department) { fields.push(`department=$${values.length + 1}`); values.push(payload.department); }
+      if (payload.mentor)     { fields.push(`mentor_name=$${values.length + 1}`); values.push(payload.mentor); }
+
+      values.push(user.id);
       await client.query(
-        `UPDATE intern_profiles SET ${updates.join(', ')} WHERE user_id=$1`,
-        [user.id]
+        `UPDATE intern_profiles SET ${fields.join(', ')} WHERE user_id=$${values.length}`,
+        values
       );
       await client.query(
         'UPDATE users SET rejection_reason=NULL WHERE id=$1',
