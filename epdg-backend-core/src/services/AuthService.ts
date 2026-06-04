@@ -358,41 +358,45 @@ export class AuthService {
   private async sendVerificationEmail(email: string, token: string): Promise<void> {
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
 
-    try {
-      await resend.emails.send({
-        from: process.env.SMTP_FROM || 'onboarding@resend.dev',
-        to: email,
-        subject: 'Verify your email address — Emerson Empire',
-        html: `
-          <h2>Welcome to Emerson Empire</h2>
-          <p>Click the link below to verify your email address:</p>
-          <a href="${verificationUrl}" style="background:#000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;">Verify Email</a>
-          <p>This link expires in 24 hours.</p>
-          <p>If you did not create an account, you can ignore this email.</p>
-        `,
-      });
-      logger.success(`Verification email sent to ${email}`);
-    } catch {
-      logger.warn(`Dev mode — verification URL: ${verificationUrl}`);
+    const { data, error } = await resend.emails.send({
+      from: process.env.SMTP_FROM || 'onboarding@resend.dev',
+      to: email,
+      subject: 'Verify your email address — Emerson Empire',
+      html: `
+        <h2>Welcome to Emerson Empire</h2>
+        <p>Click the link below to verify your email address:</p>
+        <a href="${verificationUrl}" style="background:#000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;">Verify Email</a>
+        <p>This link expires in 24 hours.</p>
+        <p>If you did not create an account, you can ignore this email.</p>
+      `,
+    });
+
+    if (error) {
+      logger.error(`Resend failed to send verification email: ${JSON.stringify(error)}`);
+      logger.warn(`Verification URL (fallback): ${verificationUrl}`);
+    } else {
+      logger.success(`Verification email sent to ${email} — id: ${data?.id}`);
     }
   }
 
   private async sendPasswordResetEmail(email: string, resetUrl: string): Promise<void> {
-    try {
-      await resend.emails.send({
-        from: process.env.SMTP_FROM || 'onboarding@resend.dev',
-        to: email,
-        subject: 'Reset your password — Emerson Empire',
-        html: `
-          <h2>Password Reset Request</h2>
-          <p>Click the link below to reset your password. This link expires in 30 minutes.</p>
-          <a href="${resetUrl}" style="background:#000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;">Reset Password</a>
-          <p>If you did not request a password reset, you can ignore this email.</p>
-        `,
-      });
-      logger.success(`Password reset email sent to ${email}`);
-    } catch {
-      logger.warn(`Dev mode — password reset URL: ${resetUrl}`);
+    const { data, error } = await resend.emails.send({
+      from: process.env.SMTP_FROM || 'onboarding@resend.dev',
+      to: email,
+      subject: 'Reset your password — Emerson Empire',
+      html: `
+        <h2>Password Reset Request</h2>
+        <p>Click the link below to reset your password. This link expires in 30 minutes.</p>
+        <a href="${resetUrl}" style="background:#000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;">Reset Password</a>
+        <p>If you did not request a password reset, you can ignore this email.</p>
+      `,
+    });
+
+    if (error) {
+      logger.error(`Resend failed to send password reset email: ${JSON.stringify(error)}`);
+      logger.warn(`Reset URL (fallback): ${resetUrl}`);
+    } else {
+      logger.success(`Password reset email sent to ${email} — id: ${data?.id}`);
     }
   }
 }
