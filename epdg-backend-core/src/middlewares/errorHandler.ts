@@ -1,21 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
+import { logger } from '../utils/logger';
 
-// Example error handling middleware
-export const errorHandler = (err: Error, req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message: 'Internal Server Error',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined,
+export const errorHandler = (err: any, req: Request, res: Response, _next: NextFunction) => {
+  logger.error(`${err.message || 'Unknown Error'} - Path: ${req.path}`);
+
+  const statusCode = err.statusCode || 500;
+  
+  res.status(statusCode).json({
+    success: false,
+    message: err.message || 'Internal Server Error',
+    errors: err.errors || [], 
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
   });
-};
-
-// Example authentication middleware
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  // TODO: Implement authentication logic (JWT verification, etc.)
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) {
-    res.status(401).json({ message: 'Unauthorized' });
-    return;
-  }
-  next();
 };

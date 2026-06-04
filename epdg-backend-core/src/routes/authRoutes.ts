@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import * as AuthController from '../controllers/AuthController';
 import { authMiddleware } from '../middlewares/auth';
+import { loginLimiter } from '../middlewares/security';
 
 const router = Router();
 
@@ -205,6 +206,7 @@ router.post(
  */
 router.post(
   '/login',
+  loginLimiter, 
   [
     body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
     body('password').notEmpty().withMessage('Password is required'),
