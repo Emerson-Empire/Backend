@@ -9,10 +9,16 @@ dotenv.config();
 import bcrypt from 'bcrypt';
 import { getPool, testConnection } from '../db';
 
+const password = process.env.SUPER_ADMIN_PASSWORD;
+if (!password) {
+  console.error('❌ SUPER_ADMIN_PASSWORD env var is not set. Aborting.');
+  process.exit(1);
+}
+
 const SUPER_ADMIN = {
-  name:     'Emerson Admin',
-  email:    'admin@theemersonempire.info',
-  password: 'Empire@Admin2026!',
+  name:     process.env.SUPER_ADMIN_NAME  || 'Emerson Admin',
+  email:    process.env.SUPER_ADMIN_EMAIL || 'admin@theemersonempire.info',
+  password,
   role:     'admin' as const,
 };
 
@@ -60,7 +66,7 @@ async function seed() {
   console.log('📋 Super Admin Credentials');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`   Email:    ${SUPER_ADMIN.email}`);
-  console.log(`   Password: ${SUPER_ADMIN.password}`);
+  console.log(`   Password: (set via SUPER_ADMIN_PASSWORD env var)`);
   console.log(`   Role:     super_admin`);
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('⚠️  Store these credentials securely.\n');
