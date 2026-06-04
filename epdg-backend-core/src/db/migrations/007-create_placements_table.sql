@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS placements CASCADE;
-
 DO $$
 BEGIN
     CREATE TYPE placement_status AS ENUM (

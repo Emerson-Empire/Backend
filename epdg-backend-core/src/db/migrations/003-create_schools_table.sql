@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS schools CASCADE;
-
 DO $$
 BEGIN
     CREATE TYPE school_type AS ENUM (
