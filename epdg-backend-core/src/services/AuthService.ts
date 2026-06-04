@@ -7,7 +7,13 @@ import { Resend } from 'resend';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-dev-secret-change-in-production';
 const SALT_ROUNDS = 12;
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+function getResend(): Resend {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY environment variable is not set');
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 export class AuthService {
 
@@ -358,7 +364,7 @@ export class AuthService {
   private async sendVerificationEmail(email: string, token: string): Promise<void> {
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
 
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: process.env.SMTP_FROM || 'onboarding@resend.dev',
       to: email,
       subject: 'Verify your email address — Emerson Empire',
@@ -380,7 +386,7 @@ export class AuthService {
   }
 
   private async sendPasswordResetEmail(email: string, resetUrl: string): Promise<void> {
-    const { data, error } = await resend.emails.send({
+    const { data, error } = await getResend().emails.send({
       from: process.env.SMTP_FROM || 'onboarding@resend.dev',
       to: email,
       subject: 'Reset your password — Emerson Empire',
