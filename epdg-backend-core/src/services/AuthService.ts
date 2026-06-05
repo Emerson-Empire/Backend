@@ -52,7 +52,7 @@ export class AuthService {
 
       const userResult = await client.query(
         `INSERT INTO users (email, name, password, role, verification_token, token_expires_at, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, NOW())
+         VALUES ($1, $2, $3, $4::user_role, $5, $6, NOW())
          RETURNING id, email, name, role, is_verified, last_login_at, created_at`,
         [data.email, data.name, hashedPassword, data.role, verificationToken, tokenExpiresAt]
       );
