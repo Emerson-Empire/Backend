@@ -119,6 +119,7 @@ export class InternService {
     contact_phone?: string;
     skills?:       string[];
     track?:        string;
+    cv_url?:       string;
     linkedin_url?: string;
     github_url?:   string;
     portfolio_url?: string;
@@ -151,6 +152,7 @@ export class InternService {
         contact_phone:        data.contact_phone,
         skills:               data.skills ? JSON.stringify(data.skills) : undefined,
         track:                data.track,
+        cv_url:               data.cv_url,
         linkedin_url:         data.linkedin_url,
         github_url:           data.github_url,
         portfolio_url:        data.portfolio_url,

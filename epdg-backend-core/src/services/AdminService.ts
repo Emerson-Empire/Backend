@@ -69,6 +69,9 @@ export class AdminService {
         -- intern fields
         ip.is_approved      AS intern_approved,
         ip.rejection_reason AS intern_rejection,
+        ip.cover_letter,
+        ip.cv_url,
+        ip.contact_phone    AS intern_phone,
         -- company fields
         c.company_name,
         c.is_approved    AS company_approved,
@@ -295,7 +298,9 @@ export class AdminService {
       last_login_at:        r.last_login_at,
       rejection_reason:     r.rejection_reason || r.intern_rejection || null,
       // role-specific
-      phone:                null,
+      phone:                r.intern_phone      || null,
+      cover_letter:         r.cover_letter      || null,
+      cv_url:               r.cv_url            || null,
       industry:             r.industry         || null,
       contact_person:       r.company_contact  || r.school_contact  || null,
       country:              r.country          || null,

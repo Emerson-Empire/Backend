@@ -31,6 +31,8 @@ export class AuthService {
     website?: string;
     city?: string;
     school_type?: 'university' | 'college' | 'polytechnic' | 'tvet';
+    cover_letter?: string;
+    cv_url?: string;
   }): Promise<{ user: any; message: string }> {
     const pool = getPool();
     const client = await pool.connect();
@@ -75,9 +77,9 @@ export class AuthService {
         );
       } else if (data.role === 'intern') {
         await client.query(
-          `INSERT INTO intern_profiles (user_id, contact_phone, created_at)
-           VALUES ($1, $2, NOW())`,
-          [user.id, data.contact_phone || null]
+          `INSERT INTO intern_profiles (user_id, contact_phone, cv_url, cover_letter, created_at)
+           VALUES ($1, $2, $3, $4, NOW())`,
+          [user.id, data.contact_phone || null, data.cv_url || null, data.cover_letter || null]
         );
       } else if (data.role === 'admin') {
         await client.query(
