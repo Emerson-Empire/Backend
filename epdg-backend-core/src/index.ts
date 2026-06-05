@@ -17,6 +17,7 @@ import { errorHandler } from './middlewares/errorHandler';
 import authRoutes   from './routes/authRoutes';
 import adminRoutes  from './routes/adminRoutes';
 import internRoutes from './routes/internRoutes';
+import uploadRoutes from './routes/uploadRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -49,10 +50,11 @@ app.get('/health', (req, res) => {
 });
 
 // --- Routes ---
-app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/auth',   authLimiter, authRoutes);
+app.use('/api/admin',  adminRoutes);
 app.use('/api/intern', internRoutes);
-app.use('/api/onboarding', internRoutes); 
+app.use('/api/onboarding', internRoutes);
+app.use('/api/upload', uploadRoutes); 
 
 // --- Error Handling ---
 app.use(errorHandler);
