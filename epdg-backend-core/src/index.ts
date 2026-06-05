@@ -21,6 +21,9 @@ import internRoutes from './routes/internRoutes';
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+// Trust Railway's reverse proxy so express-rate-limit can read the real client IP
+app.set('trust proxy', 1);
+
 // --- Middlewares Globais ---
 app.use(helmet());
 app.use(express.json());
