@@ -369,13 +369,39 @@ export class AuthService {
     const { data, error } = await getResend().emails.send({
       from: process.env.SMTP_FROM || 'onboarding@resend.dev',
       to: email,
-      subject: 'Verify your email address — Emerson Empire',
+      subject: 'Verify your email — Emerson Empire',
       html: `
-        <h2>Welcome to Emerson Empire</h2>
-        <p>Click the link below to verify your email address:</p>
-        <a href="${verificationUrl}" style="background:#000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;">Verify Email</a>
-        <p>This link expires in 24 hours.</p>
-        <p>If you did not create an account, you can ignore this email.</p>
+        <!DOCTYPE html>
+        <html><body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
+            <tr><td align="center">
+              <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;">
+                <tr><td style="background:#000000;padding:24px 40px;">
+                  <h1 style="color:#ffffff;margin:0;font-size:22px;">Emerson Empire</h1>
+                </td></tr>
+                <tr><td style="padding:40px;">
+                  <h2 style="color:#111;margin-top:0;">Verify your email address</h2>
+                  <p style="color:#555;font-size:15px;line-height:1.6;">
+                    Welcome! Click the button below to verify your email address and activate your account.
+                  </p>
+                  <table cellpadding="0" cellspacing="0" style="margin:32px 0;">
+                    <tr><td style="background:#000000;border-radius:6px;">
+                      <a href="${verificationUrl}"
+                         style="display:inline-block;padding:14px 32px;color:#ffffff;text-decoration:none;font-size:16px;font-weight:bold;">
+                        Verify Email Address
+                      </a>
+                    </td></tr>
+                  </table>
+                  <p style="color:#888;font-size:13px;">This link expires in <strong>24 hours</strong>.</p>
+                  <p style="color:#888;font-size:13px;">If the button doesn't work, copy and paste this link into your browser:</p>
+                  <p style="color:#555;font-size:13px;word-break:break-all;">${verificationUrl}</p>
+                  <hr style="border:none;border-top:1px solid #eee;margin:32px 0;">
+                  <p style="color:#aaa;font-size:12px;">If you did not create an account, you can safely ignore this email.</p>
+                </td></tr>
+              </table>
+            </td></tr>
+          </table>
+        </body></html>
       `,
     });
 
@@ -393,10 +419,37 @@ export class AuthService {
       to: email,
       subject: 'Reset your password — Emerson Empire',
       html: `
-        <h2>Password Reset Request</h2>
-        <p>Click the link below to reset your password. This link expires in 30 minutes.</p>
-        <a href="${resetUrl}" style="background:#000;color:#fff;padding:12px 24px;border-radius:4px;text-decoration:none;">Reset Password</a>
-        <p>If you did not request a password reset, you can ignore this email.</p>
+        <!DOCTYPE html>
+        <html><body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
+            <tr><td align="center">
+              <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;">
+                <tr><td style="background:#000000;padding:24px 40px;">
+                  <h1 style="color:#ffffff;margin:0;font-size:22px;">Emerson Empire</h1>
+                </td></tr>
+                <tr><td style="padding:40px;">
+                  <h2 style="color:#111;margin-top:0;">Password Reset Request</h2>
+                  <p style="color:#555;font-size:15px;line-height:1.6;">
+                    We received a request to reset your password. Click the button below to choose a new one.
+                    This link expires in <strong>30 minutes</strong>.
+                  </p>
+                  <table cellpadding="0" cellspacing="0" style="margin:32px 0;">
+                    <tr><td style="background:#000000;border-radius:6px;">
+                      <a href="${resetUrl}"
+                         style="display:inline-block;padding:14px 32px;color:#ffffff;text-decoration:none;font-size:16px;font-weight:bold;">
+                        Reset Password
+                      </a>
+                    </td></tr>
+                  </table>
+                  <p style="color:#888;font-size:13px;">If the button doesn't work, copy and paste this link into your browser:</p>
+                  <p style="color:#555;font-size:13px;word-break:break-all;">${resetUrl}</p>
+                  <hr style="border:none;border-top:1px solid #eee;margin:32px 0;">
+                  <p style="color:#aaa;font-size:12px;">If you did not request a password reset, you can safely ignore this email.</p>
+                </td></tr>
+              </table>
+            </td></tr>
+          </table>
+        </body></html>
       `,
     });
 
