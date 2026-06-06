@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middlewares/auth';
 import { AdminService } from '../services/AdminService';
+import { parseCvFromUrl } from '../utils/cvParser';
+import { getPool } from '../db';
 
 const adminService = new AdminService();
 
@@ -57,6 +59,107 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     await adminService.deleteUser(userId);
     res.json({ success: true, message: 'User deleted.' });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message, errors: [] });
+  }
+};
+
+// GET /api/admin/users/:id/cv-analysis
+export const getCvAnalysis = async (req: Request, res: Response) => {
+  try {
+    const pool   = getPool();
+    const userId = Number(req.params.id);
+
+    // Fetch intern's cv_url
+    const { rows } = await pool.query(
+      `SELECT ip.cv_url FROM intern_profiles ip
+       JOIN users u ON u.id = ip.user_id
+       WHERE ip.user_id = $1 AND u.role = 'intern' AND u.deleted_at IS NULL`,
+      [userId]
+    );
+
+    if (!rows.length || !rows[0].cv_url) {
+      res.status(404).json({ success: false, message: 'No CV found for this intern.', errors: [] });
+      return;
+    }
+
+    const parsed = await parseCvFromUrl(rows[0].cv_url);
+    if (!parsed) {
+      res.status(422).json({ success: false, message: 'Could not parse CV. The file may be corrupt or inaccessible.', errors: [] });
+      return;
+    }
+
+    // Fetch open internship slots
+    const slots = await pool.query(
+      `SELECT id, title, department, skills_required, description
+       FROM internship_slots
+       WHERE status = 'open' AND deleted_at IS NULL
+       ORDER BY created_at DESC`
+    );
+
+    // Category → department fallback mapping
+    const CATEGORY_DEPT: Record<string, string> = {
+      'Frontend':             'Frontend',
+      'Backend':              'Backend',
+      'Databases':            'Backend',
+      'Programming Languages':'Backend',
+      'Cloud & DevOps':       'Backend',
+      'Design':               'UX/UI',
+      'Digital Marketing':    'Marketing',
+      'Tools & Practices':    'Backend',
+      'Soft Skills':          'Sales',
+    };
+
+    const internSkills = new Set(parsed.skills.all.map((s) => s.toLowerCase()));
+
+    const recommendations = slots.rows.map((slot) => {
+      const required: string[] = Array.isArray(slot.skills_required)
+        ? slot.skills_required.map((s: string) => s.toLowerCase())
+        : typeof slot.skills_required === 'object' && slot.skills_required
+          ? (Object.values(slot.skills_required) as string[][]).flat().map((s) => s.toLowerCase())
+          : [];
+
+      let score = 0;
+      let matchedSkills: string[] = [];
+
+      if (required.length > 0) {
+        matchedSkills = required.filter((s) => internSkills.has(s));
+        score = Math.round((matchedSkills.length / required.length) * 100);
+      } else {
+        // Fallback: department-based scoring from skill categories
+        const internDepts = Object.entries(parsed.skills.categories)
+          .filter(([, skills]) => skills.length > 0)
+          .map(([cat]) => CATEGORY_DEPT[cat])
+          .filter(Boolean);
+
+        if (slot.department && internDepts.includes(slot.department)) {
+          score = 60;
+        }
+        matchedSkills = parsed.skills.all.slice(0, 5);
+      }
+
+      return {
+        id:          slot.id,
+        title:       slot.title,
+        department:  slot.department,
+        description: slot.description,
+        score,
+        matched_skills: matchedSkills,
+        required_skills: required,
+      };
+    });
+
+    // Sort by score descending, take top 5
+    recommendations.sort((a, b) => b.score - a.score);
+    const top = recommendations.slice(0, 5);
+
+    res.json({
+      success: true,
+      data: {
+        skills:          parsed.skills,
+        recommendations: top,
+      },
+    });
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message, errors: [] });
   }

@@ -109,6 +109,9 @@ router.patch('/users/:id', AdminController.updateUser);
  */
 router.delete('/users/:id', AdminController.deleteUser);
 
+// CV analysis + internship recommendations for a specific intern
+router.get('/users/:id/cv-analysis', AdminController.getCvAnalysis);
+
 // Applications — view all with extracted CV skills
 router.get('/applications', ApplicationController.getAllApplications);
 
