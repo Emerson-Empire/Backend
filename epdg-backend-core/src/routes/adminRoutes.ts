@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { authMiddleware } from '../middlewares/auth';
-import { roleGuard } from '../middlewares/auth';
+import { authMiddleware, roleGuard } from '../middlewares/auth';
 import * as AdminController from '../controllers/AdminController';
+import * as ApplicationController from '../controllers/ApplicationController';
 
 const router = Router();
 
@@ -108,5 +108,8 @@ router.patch('/users/:id', AdminController.updateUser);
  *       - bearerAuth: []
  */
 router.delete('/users/:id', AdminController.deleteUser);
+
+// Applications — view all with extracted CV skills
+router.get('/applications', ApplicationController.getAllApplications);
 
 export default router;

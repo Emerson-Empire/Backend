@@ -1,28 +1,27 @@
 import { Router } from 'express';
 import { authMiddleware, roleGuard } from '../middlewares/auth';
 import * as InternController from '../controllers/InternController';
+import * as ApplicationController from '../controllers/ApplicationController';
 
 const router = Router();
 
 // All intern routes require valid JWT
 router.use(authMiddleware);
 
-/**
- * @swagger
- * tags:
- *   name: Intern
- *   description: Intern dashboard, profile and onboarding
- */
-
-// Dashboard — intern sees tasks, stats, announcements
+// Dashboard
 router.get('/dashboard', roleGuard('intern'), InternController.getDashboard);
 
-// Profile — view and edit
+// Profile
 router.get('/profile',   roleGuard('intern'), InternController.getProfile);
 router.patch('/profile', roleGuard('intern'), InternController.updateProfile);
 
-// Onboarding — accessible to interns only
-router.get('/onboarding',                      roleGuard('intern'), InternController.getOnboarding);
-router.patch('/onboarding/:stepId/complete',   roleGuard('intern'), InternController.completeOnboardingStep);
+// Onboarding
+router.get('/onboarding',                    roleGuard('intern'), InternController.getOnboarding);
+router.patch('/onboarding/:stepId/complete', roleGuard('intern'), InternController.completeOnboardingStep);
+
+// Applications
+router.get('/slots',        roleGuard('intern'), ApplicationController.getOpenSlots);
+router.post('/apply',       roleGuard('intern'), ApplicationController.apply);
+router.get('/applications', roleGuard('intern'), ApplicationController.getMyApplications);
 
 export default router;
