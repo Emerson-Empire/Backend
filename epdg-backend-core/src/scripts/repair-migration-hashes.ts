@@ -1,7 +1,7 @@
-const dotenv = require("dotenv");
-const path = require("path");
-const { Pool } = require("pg");
-const { loadMigrationFiles } = require("postgres-migrations");
+import dotenv from "dotenv"
+import path from "path";
+import { Pool } from "pg";
+import { loadMigrationFiles } from "postgres-migrations";
 
 dotenv.config();
 
