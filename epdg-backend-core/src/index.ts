@@ -14,10 +14,11 @@ import { corsOptions } from './utils/corsconfig';
 import { authLimiter } from './middlewares/security';
 import { errorHandler } from './middlewares/errorHandler';
 
-import authRoutes   from './routes/authRoutes';
-import adminRoutes  from './routes/adminRoutes';
-import internRoutes from './routes/internRoutes';
-import uploadRoutes from './routes/uploadRoutes';
+import authRoutes    from './routes/authRoutes';
+import adminRoutes   from './routes/adminRoutes';
+import internRoutes  from './routes/internRoutes';
+import uploadRoutes  from './routes/uploadRoutes';
+import companyRoutes from './routes/companyRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -54,7 +55,8 @@ app.use('/api/auth',   authLimiter, authRoutes);
 app.use('/api/admin',  adminRoutes);
 app.use('/api/intern', internRoutes);
 app.use('/api/onboarding', internRoutes);
-app.use('/api/upload', uploadRoutes); 
+app.use('/api/upload', uploadRoutes);
+app.use('/api/company', companyRoutes);
 
 // --- Error Handling ---
 app.use(errorHandler);
