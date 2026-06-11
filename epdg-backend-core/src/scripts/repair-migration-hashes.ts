@@ -1,4 +1,4 @@
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 import path from "path";
 import { Pool } from "pg";
 import { loadMigrationFiles } from "postgres-migrations";
@@ -18,9 +18,10 @@ async function main() {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     ssl:
-      process.env.DB_SSL === "false"
-        ? false
-        : { rejectUnauthorized: false },
+      process.env.DB_SSL === "true" ||
+      process.env.DB_HOST?.includes("supabase.com")
+      ? { rejectUnauthorized: false }
+      : false,
   });
 
   const client = await pool.connect();
