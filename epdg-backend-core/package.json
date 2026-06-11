@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "npm run repair:migration-hashes && nodemon --exec ts-node src/index.ts",
-    "repair:migration-hashes": "npx tsc && node dist/scripts/repair-migration-hashes.js",
+    "repair:migration-hashes": "ts-node src/scripts/repair-migration-hashes.ts",
     "build": "tsc && cp -r src/db/migrations dist/db/migrations",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix"
