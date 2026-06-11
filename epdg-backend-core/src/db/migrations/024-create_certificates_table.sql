@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS certificates (
+  id SERIAL PRIMARY KEY,
+  placement_id INTEGER NOT NULL UNIQUE REFERENCES placements(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  company_id INTEGER NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  certificate_url VARCHAR(500) NOT NULL,
+  share_token VARCHAR(100) UNIQUE NOT NULL,
+  issued_at TIMESTAMPTZ DEFAULT NOW(),
+  issued_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  is_revoked BOOLEAN DEFAULT FALSE,
+  revoked_at TIMESTAMPTZ,
+  revoked_reason TEXT
+);
